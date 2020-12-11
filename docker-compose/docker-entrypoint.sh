@@ -14,10 +14,6 @@ while true ; do
   fi
 done
 
-set -e
-
-cd /go/src/github.com/CanonicalLtd/serial-vault
-
 sed -i  \
   -e "s/API_KEY/$API_KEY/g" \
   -e "s/POSTGRES_HOST/$POSTGRES_HOST/g" \
@@ -27,6 +23,16 @@ sed -i  \
   -e "s/POSTGRES_USER/$POSTGRES_USER/g" \
   -e "s/KEYSTORE_SECRET/$KEYSTORE_SECRET/g" \
   settings.yaml
+
+psql -c "\dt" postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT | grep modelassertion 2> /dev/null
+if [ $? -ne 0 ]; then
+  go run cmd/serial-vault-admin/main.go database --config=settings.yaml
+fi
+
+set -e
+
+cd /go/src/github.com/CanonicalLtd/serial-vault
+
 
 go run cmd/serial-vault/main.go -mode=admin &
 go run cmd/serial-vault/main.go -mode=signing

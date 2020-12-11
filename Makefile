@@ -168,6 +168,11 @@ test-frontend-ci:
 	npm install -g codecov && \
 	npm run test:ci
 
+# prepare docker environment
+.PHONY: docker
+docker:
+	docker build -t serial-vault-web .
+
 # run application/db in docker
 .PHONY: run-docker
 run-docker:
